@@ -13,9 +13,7 @@ import android.widget.TextView;
 public class CheatActivity extends AppCompatActivity {
 
     private static final String EXTRA_ANSWER_IS_TRUE = "com.liu.android.geoquiz.answer_is_true";
-    private static final String EXTRA_ANSWER_SHOWN = "com.liu.android.geoquiz.answer_shown";
     private static final String KEY_IS_CHEATER1 = "com.liu.android.geoquiz.cheat1";
-    private static final String KEY_IS_CHEATER2 = "com.liu.android.geoquiz.cheat2";
 
     private boolean mAnswerIsTrue;
     private TextView mAnswerTextView;
@@ -27,15 +25,6 @@ public class CheatActivity extends AppCompatActivity {
         i.putExtra(EXTRA_ANSWER_IS_TRUE,answerIsTrue);
         return i;
     }
-
-    public static boolean wasAnswerShown(Intent result){
-        return result.getBooleanExtra(EXTRA_ANSWER_SHOWN,false);
-    }
-
-    public static boolean seenAnswer(Intent result){
-        return result.getBooleanExtra(KEY_IS_CHEATER1,false);
-    }
-
 
 
     @Override
@@ -50,10 +39,9 @@ public class CheatActivity extends AppCompatActivity {
         mShowAnswer = (Button) findViewById(R.id.showAnswerButton);
 
 
-        //if (savedInstanceState != null){
-           // mUSeeAnswer = savedInstanceState.getBoolean(KEY_IS_CHEATER,false);
-        //}
-
+        if (savedInstanceState !=null){
+            mUSeeAnswer = savedInstanceState.getBoolean(KEY_IS_CHEATER1,false);
+        }
 
         mShowAnswer.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -64,13 +52,9 @@ public class CheatActivity extends AppCompatActivity {
                     mAnswerTextView.setText(R.string.false_button);
                 }
                 mUSeeAnswer = true;
-                setAnswerShownResult(true,true);
+                setAnswerShownResult();
             }
         });
-
-        if (savedInstanceState !=null){
-            mUSeeAnswer = savedInstanceState.getBoolean(KEY_IS_CHEATER1,false);
-        }
 
         if (mUSeeAnswer){
             if (mAnswerIsTrue){
@@ -80,6 +64,8 @@ public class CheatActivity extends AppCompatActivity {
             }
         }
 
+        setAnswerShownResult();   //没有此行的话，在旋转后，不会实现该方法，也就不会向QuizActivity中传递数据
+
     }
 
 
@@ -87,17 +73,26 @@ public class CheatActivity extends AppCompatActivity {
     public void onSaveInstanceState(Bundle savedInstanceState){
         super.onSaveInstanceState(savedInstanceState);
         savedInstanceState.putBoolean(KEY_IS_CHEATER1,mUSeeAnswer);
-        savedInstanceState.putString(KEY_IS_CHEATER2, String.valueOf(mAnswerTextView));
     }
 
 
 
 
-    private void setAnswerShownResult(boolean isAnswerShown,boolean uSeeAnswer){
+    private void setAnswerShownResult(){
         Intent data = new Intent();
-        data.putExtra(EXTRA_ANSWER_SHOWN,isAnswerShown);
-        data.putExtra(KEY_IS_CHEATER1,uSeeAnswer);
+        if (mUSeeAnswer){
+            data.putExtra(KEY_IS_CHEATER1,true);
+        }else {
+            data.putExtra(KEY_IS_CHEATER1,false);
+        }
         setResult(RESULT_OK,data);
     }
+
+
+    public static boolean seenAnswer(Intent result){
+        return result.getBooleanExtra(KEY_IS_CHEATER1,false);
+    }
+
+
 
 }
