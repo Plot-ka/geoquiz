@@ -126,7 +126,7 @@ public class QuizActivity extends AppCompatActivity {
             if (data == null){     //等式成立则未点击show answer按钮
                 return;
             }
-            mIsCheater = CheatActivity.wasAnswerShown(data);
+            mIsCheater = CheatActivity.seenAnswer(data);
         }
     }
 
