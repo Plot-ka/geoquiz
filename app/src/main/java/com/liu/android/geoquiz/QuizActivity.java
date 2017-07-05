@@ -25,11 +25,11 @@ public class QuizActivity extends AppCompatActivity {
     private boolean mIsCheater;
 
     private Question[] mQuestionsBank = new Question[]{
-            new Question(R.string.question_oceans,true),
-            new Question(R.string.question_mideast,false),
-            new Question(R.string.question_africa,false),
-            new Question(R.string.question_americas,true),
-            new Question(R.string.question_asia,true)
+            new Question(R.string.question_oceans,true,false),
+            new Question(R.string.question_mideast,false,false),
+            new Question(R.string.question_africa,false,false),
+            new Question(R.string.question_americas,true,false),
+            new Question(R.string.question_asia,true,false)
     };
 
     private int mCurrentIndex = 0;
@@ -56,8 +56,15 @@ public class QuizActivity extends AppCompatActivity {
         Toast.makeText(this,messageResId,Toast.LENGTH_SHORT).show();
     }
 
+    private void cheater(){
+        if (mIsCheater){
+            mQuestionsBank[mCurrentIndex].setAnswerIsPress(true);
+        }
+    }
+
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d(TAG,"onCreate(Bundle) called");
         setContentView(R.layout.activity_quiz);
@@ -85,11 +92,26 @@ public class QuizActivity extends AppCompatActivity {
         mNextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                cheater();
+
                 mCurrentIndex = (mCurrentIndex+1)%mQuestionsBank.length;
-                mIsCheater = false;  //注意用此行重置作弊状态
+
+                if (mQuestionsBank[mCurrentIndex].isAnswerIsPress() == false){
+                    mIsCheater = false;
+                }else{
+                    mIsCheater = true;
+                }
+                //程序仍有错误，用户可通过闲点击ShowAnswer查看答案，退回QuizActivity再点击cheat（不点击
+                //ShowAnswer）再退回QuizActivity清除作弊
+
+
                 updateQuestion();
             }
+
         });
+
+
 
         mCheatButton = (Button) findViewById(R.id.cheat_button);
         mCheatButton.setOnClickListener(new View.OnClickListener() {
@@ -136,6 +158,7 @@ public class QuizActivity extends AppCompatActivity {
 
         }
     }
+
 
 
     @Override
